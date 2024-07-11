@@ -1,4 +1,4 @@
-Docker, image, et container :
+# DOCKER ET VIRTUALIZATION
 
 Une image Docker téléchargée via la plateforme opendata Docker Hub est un
 ensemble de ficheirs compressés, qui constituent un environnement de systeme
@@ -7,30 +7,30 @@ d'un container avec docker build et run, et dedans, grace à l'usage si besoin d
 on execute une série de commandes pour finaliser l'image customisée (cf la partie sur le
 Dockerfile).
 
-LES COMMANDES DE BASE EN DOCKER :
+## LES COMMANDES DE BASE EN DOCKER :
 
 - Dans le cas d' une image déjà construite.
 Si l'image existe déjà (pas de Dockerfile), la procedure est simple:
 
- "docker pull" si on a besoin de la récupérer sur Docker Hub.
+ `docker pull` si on a besoin de la récupérer sur Docker Hub.
 
- "docker run -it -d <image>" permet de lancer le container en mode intéractif
+ `docker run -it -d <image>` permet de lancer le container en mode intéractif
  (option -it), et en mode détaché (option -d), cette option permet de détacher
  le deamon (et le bash) pour run plusieurs containers en meme temps.
 
- "docker stop <container>" pour stopper l' exec d'un container.
+ `docker stop <container>` pour stopper l' exec d'un container.
 
-Quelques autres commandes utiles :
+### Quelques autres commandes utiles :
 
 Afin de connaitre les images existantes sur le systeme :
- "docker image ls"
+ `docker image ls`
 
 Pour voir les containers en cours d'exec et obtenir des infos :
- "docker ps"
+ `docker ps`
 (ps pour processus)
 
 Pour consulter les rapports d'erreur :
- "docker logs <container_1> <container_2> <etc>"
+ `docker logs <container_1> <container_2> <etc>`
 
 
 - Dans le cas d' une image pas encore construite (partiellement construite en réalité)
@@ -78,22 +78,22 @@ Sur Linux, il est à installer, c'est un logiciel permettant d'orchestrer et d'o
 plusieurs containers comme autant de services. Pour l' utilise il faut rédiger un fichier
 docker-compose.yml (en langage Go). Les interfaces Docker et Docker Compose sont différents mais
 utilisent beaucoup de commandes similaires (par exemple "docker pull" pour une image via Docker,
-et "docker compose pull" pour
+et `docker compose pull` pour
 plusieurs images par Docker Compose).
 
 Pour lancer docker compose :
-"	docker compose -f ./srcs/docker-compose.yml build
-	docker compose -f ./srcs/docker-compose.yml up -d "
+`docker compose -f ./srcs/docker-compose.yml build`
+`docker compose -f ./srcs/docker-compose.yml up -d`
 build permet de relancer la mise à jour d'images et des containers (si par exemple il
 y a eu une modification dans le code), puis up va lancer en mode détaché (-d) la construction de
 l'ensemble des containers via le docker-compose.yml.
 
 Pour stopper la stack des containers, ou stack Docker compose :
-	"docker stop $(docker ps -qa);"
+`docker stop $(docker ps -qa)`
 
 Pour arreter et supprimer les containers :
-	"docker compose -f ./srcs/docker-compose.yml down
-	docker system prune -af"
+`docker compose -f ./srcs/docker-compose.yml down`
+`docker system prune -af`
 
 Astuce : la commande "docker-compose config" permet de vérifier la syntaxe du doc.
 
@@ -103,24 +103,24 @@ lors d'une personnalisation d'images de base par exemple. Sans "build" on pourra
 la commande "environnement" pour notifier toutes les variables d'env (mdp, noms des users etc).
 
 
-PETIT RAPPEL D'ARCHITECTURE SYSTEME : Les répertoires système communs :
+## PETIT RAPPEL D'ARCHITECTURE SYSTEME : Les répertoires système communs :
 
-/bin : Contient les programmes système essentiels (binaires) accessibles à tous les
+**/bin** : Contient les programmes système essentiels (binaires) accessibles à tous les
 utilisateurs. Ces programmes sont nécessaires pour démarrer et gérer le système.
 
-/sbin : Similar à /bin, mais contient des commandes système utilisées par l'administrateur
+**/sbin** : Similar à /bin, mais contient des commandes système utilisées par l'administrateur
 système pour la maintenance et la configuration du système.
 
-/etc : Contient les fichiers de configuration système. Les modifications de ces fichiers
+**/etc** : Contient les fichiers de configuration système. Les modifications de ces fichiers
 affectent le comportement global du système.
 
-/var : Contient des données variables telles que les fichiers journaux, les bases de données,
+**/var** : Contient des données variables telles que les fichiers journaux, les bases de données,
 les courriels, etc. Ces données peuvent être fréquemment mises à jour pendant le
 fonctionnement du système.
 
-/usr : Contient les fichiers, les bibliothèques, les exécutables, la documentation et autres
+**/usr** : Contient les fichiers, les bibliothèques, les exécutables, la documentation et autres
 ressources partagées entre les utilisateurs. Il est souvent monté en lecture seule, sauf pour
 certains sous-répertoires.
 
-scp -r alibourb@localhost:/home/alibourb/Documents/ .
+`scp -r alibourb@localhost:/home/alibourb/Documents/ .`
 commande a entrer dans le terminal en local
