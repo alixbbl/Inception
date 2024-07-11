@@ -1,0 +1,126 @@
+Docker, image, et container :
+
+Une image Docker téléchargée via la plateforme opendata Docker Hub est un
+ensemble de ficheirs compressés, qui constituent un environnement de systeme
+de fichiers préconfiguré. Une fois récupéré le "kit", on lance la création
+d'un container avec docker build et run, et dedans, grace à l'usage si besoin du dockerfile,
+on execute une série de commandes pour finaliser l'image customisée (cf la partie sur le
+Dockerfile).
+
+LES COMMANDES DE BASE EN DOCKER :
+
+- Dans le cas d' une image déjà construite.
+Si l'image existe déjà (pas de Dockerfile), la procedure est simple:
+
+ "docker pull" si on a besoin de la récupérer sur Docker Hub.
+
+ "docker run -it -d <image>" permet de lancer le container en mode intéractif
+ (option -it), et en mode détaché (option -d), cette option permet de détacher
+ le deamon (et le bash) pour run plusieurs containers en meme temps.
+
+ "docker stop <container>" pour stopper l' exec d'un container.
+
+Quelques autres commandes utiles :
+
+Afin de connaitre les images existantes sur le systeme :
+ "docker image ls"
+
+Pour voir les containers en cours d'exec et obtenir des infos :
+ "docker ps"
+(ps pour processus)
+
+Pour consulter les rapports d'erreur :
+ "docker logs <container_1> <container_2> <etc>"
+
+
+- Dans le cas d' une image pas encore construite (partiellement construite en réalité)
+Il s'agit ici de partir d' une image de base, par exemple dans Inception, d'une
+version de Linux (Debian:bullseye). On va ensuite ajouter a cette image de base une
+série d'instructions pour ajouter des fonctionnalités, via le Dockerfile. Attention :
+le Dcokerfile est lu et exécuté séquentiellement. La derniere commande (CMD ou
+ENTRYPOINT, est de cette maniere la derniere commande executée, une fois que tout est
+construit).
+
+ "FROM <image_de_base>"
+
+ "RUN <bloc des instructions necessaires : apt-get, curl etc>"
+
+ "COPY /path/src/ /path/dest/" permet de copier des fichiers utiles (config etc)
+ de l'hote vers le container, ce sont des outils en gros.
+
+ "WORDIR </directory/to/work/in>" specifie un repo de travail, a partir de cette
+ instruction, tout sera effectué a cet emplacement (toutes les instrucitons RUN)
+
+ "RUN <autres instructions>
+
+ "VOLUME </directory/for/shared/volumes>" (facultatif)
+ permet de specifier un volume
+
+ "EXPOSE <port>" (facultatif) port par lequel le container va communiquer
+
+ "CMD et/ou ENTRYPOINT ["<command>", "<args>"]"
+ CMD est la commande par défaut à exécuter au lancement du container; si
+ une autre commande est specifiée au moment du lancement, elle ne sera pas executée.
+ En revanche ENTRYPOINT est obligatoirement exécutée. On peut avoir les deux. On ne les
+ utiluse qu'une seule fois par Dockerfile.
+
+Lancer son container avec le Dockerfile :
+ - "docker build -t <image_name> ." le point stipule le répertoire de construction,
+ là où se trouve le Dockerfile.
+ - "docker run -d <image_name>"
+
+Il n'y a donc pas de commandes imposées dans le Dockerfile, hormis FROM évidemment, la
+difficulté du projet réside essentiellement dans la rédaction de ces derniers.
+
+DOCKER COMPOSE & CLI (COMMAND LINE INTERFACE)
+
+Sur Linux, il est à installer, c'est un logiciel permettant d'orchestrer et d'organiser
+plusieurs containers comme autant de services. Pour l' utilise il faut rédiger un fichier
+docker-compose.yml (en langage Go). Les interfaces Docker et Docker Compose sont différents mais
+utilisent beaucoup de commandes similaires (par exemple "docker pull" pour une image via Docker,
+et "docker compose pull" pour
+plusieurs images par Docker Compose).
+
+Pour lancer docker compose :
+"	docker compose -f ./srcs/docker-compose.yml build
+	docker compose -f ./srcs/docker-compose.yml up -d "
+build permet de relancer la mise à jour d'images et des containers (si par exemple il
+y a eu une modification dans le code), puis up va lancer en mode détaché (-d) la construction de
+l'ensemble des containers via le docker-compose.yml.
+
+Pour stopper la stack des containers, ou stack Docker compose :
+	"docker stop $(docker ps -qa);"
+
+Pour arreter et supprimer les containers :
+	"docker compose -f ./srcs/docker-compose.yml down
+	docker system prune -af"
+
+Astuce : la commande "docker-compose config" permet de vérifier la syntaxe du doc.
+
+Lors de la rédaction du docker-compose.yml, il y a des choixa faire, notamment sur l'usage
+de "build", on l'utilise avec a commande "args" si l' on doit construire toutes les images
+lors d'une personnalisation d'images de base par exemple. Sans "build" on pourra plutôt utiliser
+la commande "environnement" pour notifier toutes les variables d'env (mdp, noms des users etc).
+
+
+PETIT RAPPEL D'ARCHITECTURE SYSTEME : Les répertoires système communs :
+
+/bin : Contient les programmes système essentiels (binaires) accessibles à tous les
+utilisateurs. Ces programmes sont nécessaires pour démarrer et gérer le système.
+
+/sbin : Similar à /bin, mais contient des commandes système utilisées par l'administrateur
+système pour la maintenance et la configuration du système.
+
+/etc : Contient les fichiers de configuration système. Les modifications de ces fichiers
+affectent le comportement global du système.
+
+/var : Contient des données variables telles que les fichiers journaux, les bases de données,
+les courriels, etc. Ces données peuvent être fréquemment mises à jour pendant le
+fonctionnement du système.
+
+/usr : Contient les fichiers, les bibliothèques, les exécutables, la documentation et autres
+ressources partagées entre les utilisateurs. Il est souvent monté en lecture seule, sauf pour
+certains sous-répertoires.
+
+scp -r alibourb@localhost:/home/alibourb/Documents/ .
+commande a entrer dans le terminal en local

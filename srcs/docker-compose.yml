@@ -1,0 +1,96 @@
+version: '3'
+
+networks:
+  inception_network:
+    driver: bridge
+
+services:
+  mariadb:
+    container_name: mariadb
+    image: mariadb
+    env_file: .env
+    build:
+      context: ./requirements/mariadb
+      dockerfile: Dockerfile
+      args:
+        DB_ADMIN_PASSWORD: ${DB_ROOT_PASSWORD}
+        DB_USERNAME: ${DB_USER}
+        DB_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    expose:
+      - "3306"
+    networks:
+      - inception_network
+    restart: on-failure
+    healthcheck:
+      test: mysqladmin ping --host=localhost -p${DB_ROOT_PASSWORD}
+      interval: 5s
+      timeout: 1s
+      retries: 20
+      start_period: 5s
+
+  nginx:
+    container_name: nginx
+    image: nginx
+    build:
+      context: ./requirements/nginx
+      dockerfile: Dockerfile
+    volumes:
+      - wordpress_data:/var/www/html
+    depends_on:
+      - wordpress
+    env_file: .env
+    ports:
+      - "443:443"
+    networks:
+      - inception_network
+    restart: on-failure
+    healthcheck:
+      test: 'curl -kfsSL https://localhost:443/'
+      interval: 5s
+      timeout: 1s
+      retries: 10
+      start_period: 5s
+
+  wordpress:
+    container_name: wordpress
+    image: wordpress
+    env_file: .env
+    build:
+      context: ./requirements/wordpress
+      dockerfile: Dockerfile
+      args:
+          DB_NAME: ${DB_DATABASE}
+          DB_USERNAME: ${DB_USER}
+          DB_PASSWORD: ${DB_PASSWORD}
+          DOMAIN_NAME: ${DOMAIN_NAME}
+          WP_TITLE: ${SITE_TITLE}
+          WP_ADMIN_USERNAME: ${WP_ADMIN_USER}
+          WP_ADMIN_PASSWORD: ${WP_ADMIN_PASSWORD}
+          WP_ADMIN_MAIL: ${WP_ADMIN_EMAIL}
+    volumes:
+      - wordpress_data:/var/www/html
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    expose:
+      - "9000"
+    networks:
+      - inception_network
+    restart: on-failure
+
+volumes:
+  mariadb_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/alibourb/data/mysql
+      o: bind
+
+  wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/alibourb/data/wordpress
+      o: bind
